@@ -1,0 +1,28 @@
+---
+layout: post
+title: "Switching to Jekyll"
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 17 Dec 2010
+
+<p><a href="http://wordpress.org">Wordpress</a> has served me pretty well for over 5 years now, but it's time for a change.</p>
+
+<p>Over those 5 years, I've been writing less and less. I'm not entirely sure of the reason, but I think it just comes down to friction. Editing text in a browser sucks, I had to log in, ran into layout problems a lot with simple things like code highlighting and inserting an image...</p>
+
+<p>Anyway, I've had my eye on Jekyll since it was announced, and I finally decided to try it out. I haven't even completed my first post yet, and I'm already glad that I did.</p>
+
+<ul>
+  <li>I can post <a href="https://github.com/csexton/jekyll.vim">straight from Vim.</a></li>
+  <li>My blog is version controlled with <a href="http://git-scm.com/">Git</a> in plaintext files, not tucked away in a gigantic database</li>
+  <li>It's <em>fast</em>. Seriously, static html vs php feels noticably faster even on a local system.</p>
+  <li>I can extend it with simple Ruby... writing a Wordpress plugin is a pain in the ass (like most things PHP).</p>
+</ul>
+
+<p>If I can get <a href="http://haml-lang.com/">Haml</a> working as well, I'll be the happiest blogger on earth.</p>
+<p>One potential downside for people who just want to get a site up quickly without a big design effort is that (as far as I know) there isn't a central repository of free themes available. I borrowed this CSS from Dan Hixon's <a href="http://danhixon.github.com/">überduper</a>. I couldn't find a license, but it is in a <a href="https://github.com/danhixon/danhixon.github.com">public GitHub repository</a> so I hope he doesn't mind sharing.</p>
+
+<p>I haven't migrated all my WordPress posts over yet, but I'll work on getting the most useful or popular ones back online when I have some time.</p>
+
+<p>In conclusion, if you haven't tried <a href="https://github.com/mojombo/jekyll">Jekyll</a> yet or want something a little lighter than your current blogging engine, definitely give it a shot!</p>

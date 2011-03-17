@@ -1,0 +1,32 @@
+---
+layout: post
+title: "A Dynamic DNS client in Ruby"
+published: true
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 17 Mar 2011
+
+Back in 2008 I wrote a Ruby gem for updating your IP address at <a href="http://afraid.org">afraid.org</a>, the free <a href="http://en.wikipedia.org/wiki/Dynamic_DNS">Dynamic DNS</a> service. For whatever reason I moved onto other things, and never published the gem. It's pretty basic but serves my needs, and may serve yours, so I've fixed it up and pushed version 0.1.2 today.
+
+h3. Installation
+
+<pre><code lang="bash">$ gem install updateafraid</code></pre>
+
+h3. Usage
+
+<pre><code lang="bash">$ updateafraid --help
+Help for commands:
+  -user       (Required, takes 1 argument)
+                  Your Afraid.org username
+  -pass       (Required, takes 1 argument)
+                  Your Afraid.org password
+  -domain     (Optional, takes 1 argument)
+                  Update IP address for one domain: -domain <name>
+  -all        (Optional, takes 0 arguments)
+                  Update IP address for all domains in your account
+  -h          (Optional, takes 0 arguments)
+                  Help</code></pre>
+
+The code is hosted at <a href="https://github.com/logankoester/updateafraid">github.com/logankoester/updateafraid</a> under an MIT License.

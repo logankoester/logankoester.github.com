@@ -1,0 +1,26 @@
+--- 
+layout: post
+title: PingLater.fm
+wordpress_id: 127
+wordpress_url: http://blog.logankoester.com/?p=127
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 07 Jun 2009
+
+I've spent the last couple of days working hard on a new app for managing your web presence.
+
+There is a service called <a href="http://ping.fm">Ping.fm</a> for broadcasting updates to your blogs, Twitter, Facebook, and other social networks all at once, from one place.
+
+This can save you a lot of time if you're trying to manage a brand or keep up with different groups of friends, and it makes it easier to prevent your presence on these sites from becoming stale.
+
+The application I'm calling <a href="http://pinglater.fm">PingLater.fm</a> takes it one step further. Now you can set up pings to be sent at a specified time in the future. You could schedule a product highlight for each day of the month, release new blog posts while you're off on vacation, or whatever else you want to use a service like this for.
+
+It's free for now while I gather feedback and optimize the code, but free users will eventually be limited to 3 pings scheduled at a time.
+
+I have a number of premium features in mind (RSS posting, image/video, iPhone...) to make it a really indispensable tool  for pro bloggers and internet marketing people.
+
+But we'll get to that. For now, I just want to hear from you. Let me know what I can do to make this useful for you!
+<br />
+<a href="http://pinglater.fm">Click here to try it out!</a>

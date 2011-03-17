@@ -1,0 +1,19 @@
+--- 
+layout: post
+title: Bundler + Watchr
+wordpress_id: 304
+wordpress_url: http://blog.logankoester.com/?p=304
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 20 Aug 2010
+
+If you're using test-driven development (and it's definitely a cliche by now, but if you're not - you should be), I highly recommend <a href="http://github.com/mynyml/watchr">Watchr</a> to run your test suite. The concept is simple: whenever you save a file, it runs the related tests for you. It's basically a modernized <a href="http://www.zenspider.com/ZSS/Products/ZenTest/">autotest</a>, and I couldn't live without it. It's totally the best workflow ever.
+
+Lately I've been switching my Ruby projects to the new <a href="http://gembundler.com/">Bundler</a> system for managing gem dependencies. With Bundler, whenever you add a gem into your Gemfile, you have to then run "bundle install" to grab it. If you're already using Watchr to autorun your tests, it is trivial to automate this.
+
+Just add this line to your test/test.watchr (or whatever you call it).
+<pre><code>  watch('Gemfile') { puts `bundle install` }</code></pre>
+
+Add a gem to your Gemfile, hit save... gem installed!

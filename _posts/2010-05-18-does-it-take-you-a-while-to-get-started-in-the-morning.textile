@@ -1,0 +1,68 @@
+--- 
+layout: post
+title: Does it take you a while to get started in the morning?
+wordpress_id: 279
+wordpress_url: http://blog.logankoester.com/?p=279
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 18 May 2010
+
+<br />
+<br />
+It does for me. When I actually am ready to sit down and do some Rails hacking, I still have to fire up a couple irb consoles, open my editor, make sure Redis is running, start a resque worker, autotest, log tails, etc etc etc... I'd really rather get right to it, wouldn't you?
+
+<pre><code lang="bash">$ rake day:begin</code></pre>
+
+Ahhh, that's much better!
+
+<pre><code lang="ruby">
+namespace :day do
+  task :begin => [:gvim, :console, :logs, :watchr, :server, :resque]
+
+  task :console do
+    puts "Opening IRB console..."
+    `gnome-terminal --window-with-profile=railsconsole -x script/console`
+  end
+
+  task :logs do
+    puts "Opening log files..."
+    `gnome-terminal --window-with-profile=rails -t "Rails Logs" -x tail -f log/*`
+  end
+
+  task :watchr do
+    puts "Starting test watchr..."
+    `gnome-terminal --window-with-profile=rails -t "Test Watchr" -x rake watchr:test`
+  end
+
+  task :gvim do
+    puts "Starting gvim..."
+    sh 'gvim'
+  end
+
+  task :server do
+    puts "Starting application server..."
+    `gnome-terminal --window-with-profile=rails -t "Application Server" -x script/server`
+  end
+
+  task :resque do
+    puts "Starting resque web... (http://localhost:5678)"
+    `resque-web 2> /dev/null`
+    puts "Starting resque worker..."
+    `gnome-terminal --window-with-profile=rails -t "Resque Worker" -x rake day:quick_resque_worker`
+  end
+
+  task :quick_resque_worker do
+    sh "QUEUE=* rake resque:work"
+  end
+end
+
+namespace :watchr do
+  task :test do
+    sh "watchr test/test.watchr"
+  end
+end
+</code></pre>
+
+Into my Rakefile it goes! And if you like that, be sure to check out <a href="http://github.com/trydionel/git-pivotal">git-pivotal</a> - grab the next thing to do and give it its own branch with just one more command. Anyone feeling clever enough to implement a rake day:end as well?

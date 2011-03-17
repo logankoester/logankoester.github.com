@@ -1,0 +1,58 @@
+--- 
+layout: post
+title: Human Readable Text Compression
+wordpress_id: 163
+wordpress_url: http://blog.logankoester.com/?p=163
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 13 Jun 2009
+
+h3. As a Web Service
+
+<a href="http://tweetshrink.com">TweetShrink</a>, a web service from <a href="http://trnsfr.com/">TRNSFR</a>, uses a database of common instant / text messaging abbreviations to reduce the number of characters in a tweet. It's essentially a human-readable compression algorithm. For example, "<strong>Some text to shrink</strong>" becomes "<strong>sum text 2 shrnk</strong>" when passed through their API.
+
+But it doesn't enforce Twitter's 140 character limit, which means it can be used beyond Twitter for whatever you like. Back in March I released the <a href="http://blog.logankoester.com/tweetshrink-gem-for-ruby">tweetshrink gem for Ruby</a>, and today I've updated it to 0.2 which includes a command line interface.
+
+h3. From the command line
+
+First, make sure you have Ruby and Rubygems installed. On Debian-based operating systems (such as <a href="http://www.ubuntu.com/">Ubuntu</a>), this goes a little something like
+
+<pre><code lang="bash">$ sudo apt-get install ruby rubygems</code></pre>
+
+Now install the gem from it's <a href="http://github.com/logankoester/tweetshrink/tree/master">GitHub repository</a>:
+
+<pre><code lang="bash">
+$ sudo gem sources -a http://gems.github.com # (only need to do this once)
+$ sudo gem install logankoester-tweetshrink
+</code></pre>
+
+You can use it from the command line like this:
+
+<pre><code lang="bash">
+$ echo "Some text to shrink" | tweetshrink
+# Or with a file...
+$ tweetshrink ./file_to_shrink.txt
+</code></pre>
+
+h3. From vim
+
+Or, you can integrate it with vim for ultimate text shrinking convenience. Just add the following to your <strong>.vimrc</strong>:
+
+<pre><code>
+""""""""""""""""""""""""""""""""""
+" Tweetshrink text filter (:tws) "
+""""""""""""""""""""""""""""""""""
+autocmd BufEnter * vmap ,tws !tweetshrink<CR>
+autocmd BufEnter * nmap ,tws !!tweetshrink<CR>
+</code></pre>
+
+Now you can shrink a single line by hitting <strong>,tws</strong> in <em>Normal</em> mode, or shrink a whole a visual block.
+
+Of course, this is just as easy to integrate with <em>your</em> favorite text editor; I just happen to use vim.
+
+h3. On the Web
+
+When I integrated this feature with my blog & tweet scheduler <a href="http://pinglater.fm">PingLater.fm</a>, I realized TweetShrink didn't have a favicon. I needed an icon to use for the button, so I created these - feel free to use them for whatever.
+[gallery link="file" columns="4"]

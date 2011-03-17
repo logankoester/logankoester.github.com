@@ -1,0 +1,210 @@
+--- 
+layout: post
+title: Bayesian Classification on Rails
+wordpress_id: 227
+wordpress_url: http://blog.logankoester.com/?p=227
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 26 Jan 2010
+
+A project I've been working on watches <a href="http://twitter.com">Twitter</a> for some search keywords, with the goal of finding new customers, jobs, items for sale, etc. For example, a computer repair shop might want to watch for the keywords "laptop" and "broken", and then reply to tweets where they think they can help.
+
+But as anyone who uses Twitter can attest, even with some very specific search terms, language filtering and geocoding, there is going to be a lot of white noise. I decided to take this one step further.
+
+<a href="http://en.wikipedia.org/wiki/Naive_Bayes_classifier">Bayesian classification</a> (your garden-variety spam filter) in ruby is quite easy, thanks to <a href="http://github.com/aurelian/ruby-stemmer">ruby-stemmer</a> and the excellent <a href="http://github.com/logankoester/classifier">classifier gem</a>. The canonical example:
+<pre><code lang="ruby">
+require 'classifier'
+b = Classifier::Bayes.new :categories => ['Interesting', 'Uninteresting']
+b.train_interesting "here are some good words. I hope you love them"
+b.train_uninteresting "here are some bad words, I hate you"
+b.classify "I hate bad words and you" # returns 'Uninteresting'
+</code></pre>
+
+Of course, if you're implementing this in a <a href="http://rubyonrails.org/">Rails</a> application, chances are you want the classifier to learn from real data over time. In my case, I want it to learn that a tweet is uninteresting when I delete it, and I want it to learn that a tweet is interesting when I visit the Tweet#show action.
+
+It seems the usual method is to <a href="http://en.wikipedia.org/wiki/Marshalling_%28computer_science%29">marshal</a> the classifier object with <a href="http://madeleine.rubyforge.org/">madeleine</a>, which creates a new snapshot file each time you train it. This is both easy and fast, but we're going to end up with thousands or millions of snapshot files in no time flat. Additionally, all bets are off if we have a few users who are really into cheap viagra. We need to give each User his own classifier and let him train it over time.
+
+First, let's set up our environment. Grab the latest <a href="http://github.com/aurelian/ruby-stemmer">ruby-stemmer</a> and <a href="http://github.com/logankoester/classifier">classifier</a> gems from Github, and build them from source. I recommend this because the gem versions I got on my first try were way out of date and quite broken, and because you'll need a classifier fork with my remove_stemmer method to marshal your classifiers using ActiveRecord.
+<pre><code lang="bash">
+$ git clone git://github.com/aurelian/ruby-stemmer.git
+$ cd ruby-stemmer
+$ rake compile
+$ sudo rake install
+$ cd ..
+
+$ git clone git://github.com/logankoester/classifier.git
+$ cd classifier
+$ sudo rake install
+
+$ sudo gem install twitter
+</code></pre>
+
+Generate a fresh rails app if you want to follow along.
+<pre><code lang="bash">
+$ rails classifier_rails_example
+$ script/generate resource user id:integer classifier:text
+$ script/generate resource keyword id:integer user_id:integer text:string
+$ script/generate resource tweet id:integer keyword_id:integer user_id:integer text:string read:boolean interesting:boolean
+$ script/generate migration ChangeClassifierDefaults
+</code></pre>
+
+Alternatively, you can clone the code from this tutorial with:
+<pre><code lang="bash">
+$ git clone git@github.com:logankoester/classifier_rails_example.git
+</code></pre>
+
+Now edit the migration you just created to look like this:
+<pre><code lang="ruby">
+class ChangeClassifierDefaults < ActiveRecord::Migration
+  def self.up
+    change_column :tweets, :interesting, :boolean, :default => false
+    change_column :tweets, :read, :boolean, :default => false
+    change_column :keywords, :text, :string, :default => ""
+  end
+
+  def self.down
+    change_column :keywords, :text
+    change_column :tweets, :read
+    change_column :tweets, :interesting
+  end
+end
+</code></pre>
+
+...and run it
+<pre><code lang="bash">
+$ rake db:migrate
+</code></pre>
+
+Open your config/environment.rb file, and add the following gems to the Initializer block.
+<pre><code lang="ruby">
+config.gem 'ruby-stemmer', :lib => 'lingua/stemmer'
+config.gem 'luisparravicini-classifier', :lib => 'classifier'
+config.gem 'twitter'
+</code></pre>
+
+Now we can use ActiveRecord's built-in YAML serialization to store the classifier.
+<pre><code lang="ruby">
+class User < ActiveRecord::Base
+  has_many :tweets
+  has_many :keywords
+
+  serialize     :classifier, Classifier::Bayes
+  before_create :initialize_classifier
+  before_update :remove_stemmer
+
+private
+
+  def initialize_classifier
+    self.classifier = Classifier::Bayes.new(
+      :categories => ['Interesting', 'Uninteresting']
+    )
+    remove_stemmer
+  end
+
+  def remove_stemmer
+    self.classifier.remove_stemmer
+  end
+end
+</code></pre>
+
+The remove_stemmer method requires a little explanation. When a Classifier is initialized, it also creates a Stemmer object to use, which ordinarily gets marshalled along with its Classifier. But when demarshalled later, the Stemmer object (which is really just a C extension) will get caught with its shorts down, and either throw an error like "Stemmer is not initialized", or in older versions, simply segfault your rails environment!
+
+The solution is simple; my fork implements a remove_stemmer method on Classifier::Base, which will force the stemmer to be reinitialized the next time it is needed. Call this method before you marshal your classifier, and your troubles will melt away.
+
+Moving on to the Tweet model, we want to classify each tweet when it is created.
+<pre><code lang="ruby">
+class Tweet < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :keyword
+
+  before_save :classify
+  
+  def classify
+    text = self.text.gsub /#{self.keyword.text}/, ''
+    if self.user.classifier.classify(text) == 'Interesting'
+      self.interesting = true
+    end
+  end
+end
+</code></pre>
+Of course, we don't want to throw off the results by including a word which is going to occur in every tweet, so we remove the search term from the text prior to classification.
+
+Add a little method to your Keyword model to grab new tweets from the <a href="http://apiwiki.twitter.com/Twitter-Search-API-Method%3A-search">Twitter Search API</a>
+<pre><code lang="ruby">
+class Keyword < ActiveRecord::Base
+  belongs_to :user
+  has_many   :tweets, :dependent => :destroy
+
+  after_save :search
+
+  def search
+    search = Twitter::Search.new(self.text).fetch
+    search.results.each do |r|
+      t = Tweet.create(
+        :keyword => self,
+        :user_id => self.user,
+        :text => r.text
+      )
+      t.save
+    end
+  end
+end
+</code></pre>
+Almost done! Now we need to train our sweet new classifier. I've opted to do this entirely from the controller, so that messing around in the console won't inadvertently have an impact on the machine's learning. We also want to mark the tweet in question as already read, so that the lesson is only learned once.
+<pre><code lang="ruby">
+class TweetsController < ApplicationController
+
+  def show
+    @tweet = Tweet.find(params[:id])
+    unless @tweet.read?
+      current_user.classifier.train_interesting(
+        @tweet.text.gsub(/#{@tweet.keyword.text}/, '')
+      )
+      current_user.save
+      @tweet.read = true
+      @tweet.save
+    end
+  end
+
+
+  def destroy
+    if @tweet = Tweet.find(params[:id])
+      if @tweet.destroy
+        current_user.classifier.train_uninteresting(
+          @tweet.text.gsub(/#{@tweet.keyword.text}/, '')
+        )
+        current_user.save
+      end
+    end
+  end
+
+end
+</code></pre>
+And there you have it... a simple machine learning solution for extracting awesome tweets. Let's try it out!
+
+Fire up a script/console session.
+<pre><code lang="ruby">
+Loading development environment (Rails 2.3.5)
+>> u = User.create
+=> #<User id: 1, classifier: #<Classifier::Bayes:0xb64f2354 @categories={:Uninteresting=>{}, :Interesting=>{}}, total_words0, stemmernil, options{:encoding=>"UTF_8", :categories=>["Interesting", "Uninteresting"], :language=>"en"}, created_at: "2010-01-26 22:17:19", updated_at: "2010-01-26 22:17:19"
+</code></pre>
+As you can see, our new user has a Bayesian Classifier waiting around to learn what kind of tweets he likes.
+<pre><code lang="ruby">
+>> u.keywords.create(:text => "robots")
+=> #<Keyword id: 1, user_id: 1, text: "robots", created_at: "2010-01-26 22:20:55", updated_at: "2010-01-26 22:20:55">
+>> Tweet.all.size
+=> 15
+</code></pre>
+
+You can use the following oneliners from script/console to play around with the training:
+<pre><code lang="ruby">
+Keyword.all.each {|k| k.search} # Rerun all searches to grab and classify more results
+Tweet.all.each {|t| u.classifier.train_interesting(t.text) if t.text.downcase.include? "cyborgs" } # Any tweet with the word "cyborgs" is interesting
+Tweet.all.each {|t| u.classifier.train_uninteresting(t.text) if t.text.downcase.include? "discount" } # Any tweet with the word "discount" is uninteresting
+Tweet.find_all_by_interesting(true).each { |t| pp t.text }.size # Print the interesting tweets and count them
+Tweet.all.each {|t| t.classify } # Rerun the classification on every tweet
+</code></pre>
+
+Of course, this technique can be applied to sorting pretty much any kind of text. Interesting/uninteresting tweets are just one example from my life. Start hacking!

@@ -1,0 +1,71 @@
+--- 
+layout: post
+title: Fun with ion3
+wordpress_id: 204
+wordpress_url: http://blog.logankoester.com/?p=204
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 07 Oct 2009
+
+<blockquote>
+  <a href="http://www.modeemi.fi/~tuomov/ion/intro.html">Ion</a>™ is a tiling tabbed window manager designed with keyboard users in mind.
+</blockquote>
+
+In recent years I've been a <a href="http://www.gnome.org/">GNOME</a> / <a href="http://www.compiz-fusion.org/">Compiz</a> guy, but while I've enjoyed it's tight integration with <a href="http://www.ubuntu.com/">Ubuntu</a> and flashy effects, I've always missed the simplicity of so-called minimalist window managers, mainly <a href="http://www.fvwm.org/">fvwm</a>. These days, however, practically everything I do happens inside a <a href="http://www.mozilla.com/en-US/firefox/">Firefox</a>, <a href="http://www.vim.org/">gvim</a>, or <a href="http://directory.fsf.org/project/gnome-terminal/">gnome-terminal</a>.
+
+I want keyboard-driven. I want scriptable. And I don't want windows hiding behind other windows. Ever.
+
+Enter <a href="http://www.modeemi.fi/~tuomov/ion/intro.html">ion3</a>. I've only been using it for the last 24 hours, and even though I haven't memorized all of the keymaps, or learned how to code in <a href="http://www.lua.org/">Lua</a> (yet!), I already love it. So far the only problem I've not been able to overcome is a bug in the latest <a href="http://www.adobe.com/products/flashplayer/">Adobe Flash</a> that breaks fullscreen video. This isn't specific to ion3 - it's a problem with any focus-follows-mouse system. I <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=462690#50">hear there is a workound</a>, but it didn't seem to work for me. I consider it a microscopic trade-off for such an efficient window manager. Many of my previously sluggish applications now run incredibly fast, and with a couple days of practice I'll be working faster too.
+<h3>Installation</h3>
+
+<pre><code lang="bash">$ sudo apt-get install ion3 ion3-dev ion3-scripts ion3-doc</code></pre>
+
+Now just log out, choose <strong>ion3</strong> and start a new session. The first time you log in you'll be greeted with the man page, which I highly suggest reading. If you try not to "cheat" by using the mouse, you'll pick up almost everything in a couple of hours, and from there you'll find yourself navigating faster and faster until you don't have to think about it at all. Just like vim.
+Ion is both simple and well-documented, so it would be pointless for me to write introductory tutorial. Instead, here are a couple tricks I've discovered.
+
+<h3>Modifying your configuration</h3>
+
+One of the first things you're going to want to do when you're done messing around is change a few settings. For the most part, this is done in a file called <em>cfg_ion.lua</em>. Copy the system-wide file (I found mine at <em>/etc/X11/ion3/cfg_ion.lua</em>) to  ~/.ion3/cfg_ion.lua and open it with a text editor.
+
+<pre><code lang="bash">
+$ mkdir ~/.ion3
+$ cp `locate cfg_ion.lua | head -1` ~/.ion3/cfg_ion.lua
+$ gvim ~/ion3/cfg_ion.lua
+</code></pre>
+
+You'll need to restart Ion for your changes to take effect. Don't worry, all your applications will stay open; only the window manager needs to be restarted. Hit <strong>F12</strong> and type <em>session/restart.</em>
+
+I messed this file up a few times experimenting, and I'll probably mess it up a few more. If you screw up this file like I did, your <strong>F12</strong> shortcut can disappear, and you'll need another way to restart Ion after you've fixed it. Keep a terminal open whenever you're editing, because you may not be able to launch one. The trick to restart Ion from the console is simple:
+<pre><code lang="bash">
+$ ps -e | grep ion3 # 21108 ?        00:00:16 ion3
+$ kill -USR1 21108
+</code></pre>
+
+<h3>Remapping Mod1</h3>
+
+The <strong>Mod1</strong> key is used to initiate most interactions with Ion. On most systems, this is <strong>Alt</strong>. This is usually a very bad choice, because a lot of other applications need the <strong>Alt</strong> key for other things. I tried the Flying Window key, but it turns out it's in a very uncomfortable place on the keyboard. The number keys are used a lot. Try reaching <strong>Win+6</strong>, and you'll see what I mean. <strong>CapsLock</strong> has been working great for me, and as an added bonus, makes it much more work to shout on IRC.
+
+Check your keymaps with <strong>xmodmap -pm</strong>. On my system, <strong>Mod3</strong> was unused, so I remapped <strong>CapsLock</strong> to that.
+
+Edit (or create) <em>~/.Xmodmaprc</em> and insert these lines at the bottom...
+<pre><code lang="bash">
+remove Lock = Caps_Lock
+add Mod3 = Caps_Lock
+</code></pre>
+
+Then run it...
+<pre><code lang="bash">/usr/bin/X11/xmodmap ~/.Xmodmaprc</code></pre>
+
+Also add this line to <em>~/.Xsession</em> so it is run automatically whenever you start X.
+
+If your <strong>xmodmap -pm</strong> now reads... 
+
+<pre><code lang="lua">mod3        Caps_Lock (0x42)</code></pre>
+
+then you're in luck! Now you just need to edit the META variable near the top of your <span style="text-decoration: underline;"><em>cfg_ion.lua</em></span> to reflect the change 
+<pre><code lang="lua">META="Mod3+"</code></pre>
+and restart.
+
+All done! I hope you enjoy learning and using Ion3 as much as I have. I don't think I'll be switching again any time soon.

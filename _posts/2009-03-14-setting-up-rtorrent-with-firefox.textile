@@ -1,0 +1,82 @@
+--- 
+layout: post
+title: Setting up rTorrent with Firefox
+wordpress_id: 68
+wordpress_url: http://blog.logankoester.com/?p=68
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 14 Mar 2009
+
+Being the closest thing we have to a native <a href="http://www.utorrent.com/">uTorrent</a> in Linux, I really like <a href="http://deluge-torrent.org/">Deluge</a>. But, at least for me, it uses a seemingly impossible amount system resources. Since a <a href="http://en.wikipedia.org/wiki/BitTorrent_client">Bittorrent client</a> is the kind of thing I want to leave running in the background, I needed a lighter alternative.
+
+I don't see any real need for a graphical interface when ultimately all it's doing is moving bits around on a network, so I went with <a href="http://libtorrent.rakshasa.no/">rTorrent</a>. One of the benefits of using command-line software is that you can use <a href="http://en.wikipedia.org/wiki/Secure_Shell">SSH</a> and <a href="http://www.gnu.org/software/screen/">screen</a> to control it over the network... we don't need no fancypants AJAX interface for this!
+
+<h3>Part 1 - rTorrent</h3>
+
+If you're using Ubuntu, you can get rTorrent from the repositories, like so...
+<pre><code lang="Bash">sudo apt-get install rtorrent</code></pre>
+
+Now that you've got the software, you're going to need to configure it. rTorrent looks for a configuration file called <strong>.rtorrent.rc</strong> in your home directory. Don't panic. Just save the <a href="http://libtorrent.rakshasa.no/browser/trunk/rtorrent/doc/rtorrent.rc?rev=latest&amp;format=raw">sample</a> as <strong>~/.rtorrent.rc</strong> and open it up in your favorite text editor.
+
+You don't need to worry about most of the stuff in this file, but you can if you want to. Here's how I have it set up:
+
+<pre><code lang="python">
+# Maximum and minimum number of peers to connect to per torrent.
+# I like to limit this because I'm often connected through cheap
+# wireless routers that have trouble with lots of connections.
+min_peers = 40
+max_peers = 450
+
+# Same as above but for seeding completed torrents (-1 = same as downloading)
+#min_peers_seed = 10
+max_peers_seed = 50
+
+# Maximum number of simultanious uploads per torrent.
+max_uploads = 30
+
+# Where do you want your downloads to go?
+directory = ~/downloads
+
+# You can put this anywhere you like, but I put it here.
+# Remember that you'll have to create this directory
+session = ~/.rtorrent/session
+
+# Watch a directory for new torrents, and stop those that have been
+# deleted.
+# This will be important when we're setting up Firefox.
+schedule = watch_directory,5,5,load_start=~/downloads/torrents/*.torrent
+schedule = untied_directory,5,5,stop_untied=
+
+# Port range to use for listening.
+# Remember if you're connected through a NAT router, you'll
+# need to forward these ports.
+port_range = 50471-50479
+
+# Enable peer exchange (for torrents not marked private)
+peer_exchange = yes
+</code></pre>
+<br />
+<h3>Part 2 - Save Link In Folder</h3>
+Okay, so you've got rTorrent all set up now, and configured to watch for new *.torrent files in a directory (mine is <em>~/downloads/torrents/*.torrent</em>). Now let's configure Firefox. There's an extension by <a href="http://mozext.achimonline.de/">Achim Seufert</a> called <a href="http://addons.mozilla.org/en-US/firefox/addon/613">Save Link In Folder</a>. You'll want to install this.
+
+After your browser restarts, go to <em>Tools &gt; Add-ons &gt; Save Link In Folder &gt; Preferences</em> and add a new folder, like this...
+
+<img class="alignnone size-full wp-image-80" title="Save Link In Folder - Torrents" src="http://blog.logankoester.com/wp-content/uploads/2009/03/savelinkinfolder.png" alt="Save Link In Folder - Torrents" width="463" height="448" />
+
+<em>Remember - the download directory must be the one you told rTorrent to watch!</em>
+
+<img class="alignnone size-full wp-image-82" title="Downloading a torrent" src="http://blog.logankoester.com/wp-content/uploads/2009/03/downloadingtorrents.png" alt="Downloading a torrent" width="463" height="365" />
+
+Now when you click a torrent link, just save it instead of opening it with Deluge. If rTorrent is running it will notice the new torrent, and get to work! You can even queue up torrents while rTorrent is off, for downloading later.
+
+I'm definitely an rTorrent noob, having just set this up tonight, but so far I like it a lot, and no longer have the performance issues I had using Deluge. This configuration would also be ideal for setting up a seedbox / media center machine, if you set up all your Firefoxes to save torrent files to a network mount on the server.
+
+<h3>Links</h3>
+<ul>
+	<li><a href="http://libtorrent.rakshasa.no/">rTorrent</a></li>
+	<li><a href="http://libtorrent.rakshasa.no/wiki/RTorrentUserGuide">rTorrent user guide</a></li>
+	<li><a href="http://libtorrent.rakshasa.no/rtorrent/rtorrent.1.html">rTorrent man page</a></li>
+	<li><a href="http://addons.mozilla.org/en-US/firefox/addon/613">Save Link In Folder</a></li>
+</ul>

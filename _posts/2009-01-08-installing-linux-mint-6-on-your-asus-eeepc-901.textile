@@ -1,0 +1,65 @@
+--- 
+layout: post
+title: Installing Linux Mint 6 on your Asus EeePC 901
+wordpress_id: 12
+wordpress_url: http://logankoester.com/2009/?p=12
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 08 Jan 2009
+
+I was a fan of <a title="http://www.geteasypeasy.com/" href="http://">ubuntu-eee</a> (now known as EasyPeasy) for a long time, but after upgrading to EasyPeasy 1.0 on my <a href="http://www.amazon.com/exec/obidos/ASIN/B001BYB620/logakoes-20/ref=nosim/">20gb EEE 901</a> ($379.99) tonight, I've decided it's time to move on, and I'm happy I chose <a href="http://www.linuxmint.com/">Linux Mint</a>. Here's what I've done so far to get it running great:
+<h3>Install Linux Mint</h3>
+Since the EeePC has no optical media drive, you will need a USB flash drive to install Mint. Download the Linux Mint .iso file and use <a href="http://lubi.sourceforge.net/unetbootin.html">UNetbootin</a> to burn it to your USB disk, then plug it into your Eee.
+
+Turn on the machine and hit <strong>F2</strong> to enter the BIOS setup. Set the boot priority to try the USB disk first. You may also want to make sure the webcam/bluetooth is turned on, while you're here. Save your changes and reboot, and Mint will guide you through the rest of the installation.
+
+When it asks you how you want to partition your disk, choose <strong>Guided - use entire disk</strong> and let it use the larger of the two SSDs.
+<h3>Install the EeePC kernel</h3>
+As usual with Linux installations, most of your hardware will work from the get-go, but not everything. The first thing you'll want to do is get the wireless card working. Plug in an ethernet cable, and then follow <a href="http://www.array.org/ubuntu/setup-intrepid.html">these instructions</a>. I recommend the <em>lean</em> kernel, and uninstalling the generic one since it will just be wasting precious disk space.
+<h3>Enable Desktop Effects</h3>
+Mint makes this easy for you by taking care of installing the correct drivers for your video card. All you should need to do is turn <a href="http://www.freedesktop.org/wiki/Software/Compiz">Compiz</a> on in <strong>Preferences &gt; Appearance &gt; Desktop Effects</strong>.
+
+<img class="aligncenter size-full wp-image-23" title="Enabling Desktop Effects in GNOME" src="http://blog.logankoester.com/wp-content/uploads/2009/01/desktop_effects.png" alt="Enabling Desktop Effects in GNOME" width="606" height="545" />
+<h3>Allow tall windows to move past the top of the screen</h3>
+Sooner or later you're going to run into a window that is too tall to display on the 9" screen, and cannot be resized. The solution is to open up a terminal and run this command:
+<pre>$ gconftool-2 --set /apps/compiz/plugins/move/allscreens/options/constrain_y --type bool 0</pre>
+This will allow you to move these windows past the top of the screen (use ALT+Drag anywhere in the window. There are a number of other useful gconftool hacks on <a href="https://help.ubuntu.com/community/EeePC/Using">Ubuntu's EeePC page</a>.
+<h3>Create $HOME/bin directory</h3>
+You're going to want a place to store little scripts and tools where they can be executed on the command line.
+<pre>$ mkdir ~/bin</pre>
+Now add it to your PATH so <a href="http://en.wikipedia.org/wiki/Bash">bash</a> can find it. Open up your ~/.bashrc file and append
+<pre>if [ -d ~/bin ] ; then
+  PATH=~/bin:"${PATH}"
+fi</pre>
+<h3>Make the LCD ultra bright!</h3>
+This hack is really cool. I found it on the <a href="http://www.ubuntu-eee.com/wiki/index.php5?title=How_to:_Ultra_Bright_LCD">EasyPeasy wiki</a>. Create a new file called <strong>ultra-bright</strong> in $HOME/bin and paste in this line, then save.
+<pre>sudo setpci -s 00:02.1 f4.b=ff</pre>
+You will need to make it executable, so
+<pre>$ chmod +x ~/bin/ultra-bright</pre>
+Now you can run
+<pre>$ ultra-bright</pre>
+to turn on the extra brightness, and use the bright/dim function keys to reset it. If you're like me, you'll want the extra brightness turned on all the time, so go ahead and create an entry for it in <strong>Preferences &gt; Sessions</strong>.
+
+<img class="aligncenter size-full wp-image-19" title="Making the screen ultra bright when you log in" src="http://blog.logankoester.com/wp-content/uploads/2009/01/ultrabright_sessions.png" alt="Making the screen ultra bright when you log in" width="484" height="398" />
+<h3>Enable the WiFi / Bluetooth / webcam toggle and performance tuner</h3>
+For this you'll need a package called <strong>eee-control</strong>. You've already installed the Eee kernel, so this package should be available to you from the repository you added to your Software Sources.
+<pre>$ sudo apt-get install eee-control</pre>
+Alternatively, you can download the Ubuntu package from <a href="http://greg.geekmind.org/eee-control/#download">the website</a>.
+
+Now you can find this nifty utility in your <strong>Administration</strong> menu. Unless you need the extra battery life, I recommend setting performance to "super". To make use of your webcam, install the <a href="http://live.gnome.org/Cheese"><strong>cheese</strong></a> and/or <a href="http://www.skype.com/"><strong>skype</strong></a> packages.
+<h3>Make sure text is being rendered crystal clear</h3>
+Open <strong>Preferences &gt; Appearance</strong> &gt; <strong>Fonts </strong>and select "Subpixel smoothing (LCDs)". Then click <strong>Details...</strong> and set <strong>Hinting</strong> to "Full". If you're like me you absolutely hate Ubuntu's default monospace font. I prefer <a href="http://fractal.csie.org/~eric/wiki/Terminus_font">Terminus</a>. To switch, install the <strong>xfonts-terminus</strong> package and make it the default Fixed Width font.
+<h3>Boost GNOME Performance with /etc/hosts</h3>
+Following <a href="http://linuxmint.com/wiki/index.php/Boost_Gnome_Performance_by_tweaking_/etc/hosts">this guide</a> will help improve your system performance, and it takes about 2 seconds.
+<h3>Installing Avant Window Navigator</h3>
+<a href="https://launchpad.net/awn">AWN</a> is similar to the Dock on Mac OS X.
+<pre>$ sudo apt-get install avant-window-navigator</pre>
+Right-click the panel at the bottom of your screen and check "Allow Panel to be Moved". Drag it to the top of your screen, right-click and lock it again. Now launch <strong>Accessories &gt; Avant Window Navigator</strong>. It's kind of ugly and huge by default, but we can fix that.
+
+Right-click on AWN and click <strong>Preferences</strong>. Turn on "Auto hide bar when not in use", then switch to the <strong>Bar Appearance</strong> tab and change <em>Bar Height</em> to something more reasonable, like 32.
+
+Now you'll want to get rid of the Window List at the top of the screen. Right-click on it and select "Remove from Panel". Gone! Now there is lots of room for program shortcuts and silly panel applets.
+<h2>That's it!</h2>
+You now have a usable OS on your Asus EeePC, which means you are both cooler and more attractive than every other clown with a clunky Xandros-based netbook. Thanks for following my guide. Let me know in the comments section how your installation experience went and if you have any other EEE tricks worth sharing.

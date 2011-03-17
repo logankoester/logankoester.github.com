@@ -1,0 +1,22 @@
+---
+layout: post
+title: "Pusher on the Desktop"
+published: false
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 07 Jan 2011
+
+Many web (or even mobile) applications can benefit from a desktop client that can sit in the notification area
+and communicate with the server, notifying users of website events or providing a quick interface for simple
+actions such as uploading a file.
+
+For actions initiated by the user, you can just use a REST API to talk to the app, but what if you want to make
+an announcement ("You have new messages!") or keep files in sync? One option would be to poll the server at
+regular intervals, but when time is of the essence, such as with chat, you really need a socket connection.
+
+That said, I don't really want several thousand users maintaining an always-on connection to my humble Linode
+instance for a little utility I'm providing for free.
+
+Enter <a href="http://pusherapp.com">Pusher</a>: Pusher is a 

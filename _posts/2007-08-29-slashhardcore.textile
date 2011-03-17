@@ -1,0 +1,83 @@
+--- 
+layout: post
+title: slashhardcore.rb is a station tuner for Digitally Imported radio
+wordpress_id: 31
+wordpress_url: http://blog.logankoester.com/scripts/slashhardcore
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 29 Aug 2007
+
+<p class="new">I updated this script! Forgot to bind the /hardcore command before. Grab it <a href="http://logankoester.com/files/slashhardcore.rb">now</a>!</p>
+I was surprised how easy it is to write an <a href="http://www.xchat.org/">XChat</a> plugin in <a href="http://www.ruby-lang.org/en/">Ruby</a>, even though it would be cooler to see a the xchat-ruby bindings pimped out <a href="http://en.wikipedia.org/wiki/Domain-specific_programming_language">DSL</a> style...oh well.
+<p class="download">Download <a href="http://logankoester.com/files/slashhardcore.rb">slashhardcore.rb</a></p>
+<p class="information">Windows users must modify <strong>@launcher</strong> to the path to their Winamp, Firefox, IE, or other shoutcast-compatible player.</p>
+
+<pre><code lang="ruby">
+# slashhardcore.rb - A faster way to tune in than the playlist bot.
+# Should work on Windows if you set a valid browser/winamp location.
+#
+# Usage: Put in your $HOME/.xchat2 directory to autoload, and restart xchat,
+# or type "/load /path/to/slashhardcore.rb"
+#
+# Commands: /pls <station, /stations (list stations), /hardcore
+#
+# Author: Logan Koester <logan@logankoester.com>
+
+include XChatRuby
+
+class SlashHardcore < XChatRubyPlugin
+
+	attr_accessor :launcher
+
+	def initialize( plugin )
+		@launcher = "/usr/bin/firefox"
+		hook_command( "pls", XCHAT_PRI_NORM,
+			method ( :pls ),
+			"Use /pls <station> to tune in. Use /stations to check list
+			of stations at di.fm"
+		)
+		hook_command( "stations", XCHAT_PRI_NORM,
+			method ( :stations_list ),
+			"Fetches an updated list of DI.fm stations"
+		)
+		hook_command( "hardcore", XCHAT_PRI_NORM,
+			method ( :hardcore ),
+			"Tunes into the happyhardcore.com radio stream"
+		)
+		puts_fmt "Digitally Imported!"
+	end
+
+	# Alias for /pls hardcore
+	def hardcore (words, words_eol, data)
+		puts_fmt "Hardcore is good for you!"
+		play "hardcore"
+		return XCHAT_EAT_ALL
+	end
+
+	# Tunes you in using your browses's default application
+	# for *.pls files
+	def pls (words, words_eol, data)
+		station = words[1]
+		puts_fmt "Tuning into #{station} (using #{@launcher})"
+		@plugin.command( "/msg #candyball test" )
+		play station
+		return XCHAT_EAT_ALL
+	end
+
+	def play (station)
+		exec "#{@launcher} http://di.fm/mp3/#{station}.pls" if fork == nil
+	end
+
+	# Returns the playlist filenames of playlists at di.fm
+	def stations_list (words, words_eol, data)
+		require 'open-uri'
+		uri = "http://www.di.fm/mobile/?type=mp3"
+		index = URI.parse uri
+		list = index.read.to_s.scan(/="\/mp3\/(.*)\.pls/).flatten
+		puts_fmt list.join ", " # CSV string
+		return XCHAT_EAT_ALL
+	end
+end
+</code></pre>

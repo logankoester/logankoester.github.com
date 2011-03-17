@@ -1,0 +1,25 @@
+--- 
+layout: post
+title: Deploying Sinatra to a sub-URI using Passenger
+excerpt: "'"
+wordpress_id: 101
+wordpress_url: http://blog.logankoester.com/?p=101
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 08 Apr 2009
+
+It's not hard, but it turns out there's a trick to it. I've run into this problem twice now, so I figure it should be documented. This is the solution if your "/" route is resulting in "Not Found" or an Apache directory listing.
+
+You can read more about the problem at <a href="http://blog.ardekantur.com/2008/07/phusion-rack-sinatra-and-sub-domains/">Ardekantur's "Phusion, Rack, Sinatra, and sub-domains"</a>, but here's my quick solution:
+<br />
+1. Disable <strong>mod_autoindex</strong> if it is enabled.
+2. Make sure your <strong>RackBaseURI</strong> does not have a trailing slash.
+3. Add this <strong>before_filter</strong> to your Sinatra app:
+<pre><code lang="ruby">before do
+  request.env['PATH_INFO'] = '/' if request.env['PATH_INFO'].empty?
+end
+</code></pre>
+
+I suppose an alternative solution would be feasible using Rack middleware, but this is what I'm using. Thanks to <a href="http://ryanfunduk.com/">Ryan Funduk</a> for helping me figure this stuff out.

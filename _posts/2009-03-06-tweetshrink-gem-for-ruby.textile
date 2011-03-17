@@ -1,0 +1,27 @@
+--- 
+layout: post
+title: TweetShrink gem for Ruby
+wordpress_id: 63
+wordpress_url: http://blog.logankoester.com/?p=63
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 06 Mar 2009
+
+<a href="http://tweetshrink.com">TweetShrink's</a> <a href="http://tweetshrink.com/api">API</a> is so simple that this gem barely adds anything on top of <a href="http://github.com/jnunemaker/httparty/tree/master">HTTParty</a>, but here it is.
+
+<pre><code lang="ruby">require 'rubygems'
+require 'tweetshrink'
+
+t = TweetShrink.shrink "One wonders why"
+# t['difference'] => 4
+# t['text'] => "1 wonders y"
+# t['original_text'] => "One wonders why"
+</code></pre>
+
+You can get it from my github account, <a href="http://github.com/logankoester/tweetshrink/tree/master">here</a>, or via rubygems like
+
+<pre><code lang="bash">$ sudo gem install logankoester-tweetshrink</code></pre>
+
+Enjoy.

@@ -1,0 +1,14 @@
+--- 
+layout: post
+title: Planning
+wordpress_id: 264
+wordpress_url: http://blog.logankoester.com/?p=264
+---
+
+h2. {{ page.title }}
+
+p(publish_date). 05 Feb 2010
+
+<img class="alignnone size-full wp-image-265" title="Planning" src="http://blog.logankoester.com/wp-content/uploads/2010/02/planning.png" alt="Planning" width="573" height="360" />
+
+Sometimes I wonder why I bother...

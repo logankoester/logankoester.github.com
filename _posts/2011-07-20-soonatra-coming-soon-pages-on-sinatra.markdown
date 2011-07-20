@@ -31,7 +31,7 @@ for creating these pages quickly.
 * Creating a mailing list (we're using [Mailchimp](http://mailchimp.com/))
 * Choosing some colors/graphics that fit well with your brand
 * Writing the page copy and setting an RSS feed url.
-* Deploy to a free [Heroku](http://heroku.com/) account and parking your domain.
+* Deploy to a free [Heroku](http://heroku.com/) account and park your domain.
 
 It is easy to extend and manage multiple themes thanks to [Compass](http://compass-style.org/), and does not require a database,
 instead using [Redis](http://redis.io/) for RSS feed consumption and tracking A/B test results.

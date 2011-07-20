@@ -26,12 +26,15 @@ I decided I don't ever want to do it again, so I created [Soonatra](https://gith
 [Soonatra](https://github.com/agoragames/soonatra) is a simple [Sinatra](http://www.sinatrarb.com/) based framework
 for creating these pages quickly.
 
-[Soonatra](https://github.com/agoragames/soonatra)reduces the steps involved to:
+[Soonatra](https://github.com/agoragames/soonatra) reduces the steps involved to:
 
 1. Creating a mailing list (we're using [Mailchimp](http://mailchimp.com/))
 2. Choosing some colors/graphics that fit well with your brand
 3. Writing the page copy and setting an RSS feed url.
 4. Deploy to a free [Heroku](http://heroku.com/) account and parking your domain.
+
+It is easy to extend and manage multiple themes thanks to [Compass](http://compass-style.org/), and does not require a database,
+instead using [Redis](http://redis.io/) for RSS feed consumption and tracking A/B test results.
 
 You can fork the git repo and have your site up and running in minutes.
 

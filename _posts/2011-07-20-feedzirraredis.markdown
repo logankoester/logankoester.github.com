@@ -24,7 +24,7 @@ in the web request/response cycle while your users impatiently twiddle their thu
 
 ### Installation
 
-    gem install feedzirra-redis
+    $ gem install feedzirra-redis
 
 See the [README](https://github.com/logankoester/feedzirra-redis/blob/master/README.markdown) and 
 [test suite](https://github.com/logankoester/feedzirra-redis/blob/master/test/test_feedzirra-redis.rb) for example usage.

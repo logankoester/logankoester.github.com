@@ -28,9 +28,9 @@ for creating these pages quickly.
 
 [Soonatra](https://github.com/agoragames/soonatra) reduces the steps involved to:
 
-* Creating a mailing list (we're using [Mailchimp](http://mailchimp.com/))
-* Choosing some colors/graphics that fit well with your brand
-* Writing the page copy and setting an RSS feed url.
+* Create a mailing list (we're using [Mailchimp](http://mailchimp.com/))
+* Choose some colors/graphics that fit well with your brand
+* Write the page copy and set an RSS feed url.
 * Deploy to a free [Heroku](http://heroku.com/) account and park your domain.
 
 It is easy to extend and manage multiple themes thanks to [Compass](http://compass-style.org/), and does not require a database,

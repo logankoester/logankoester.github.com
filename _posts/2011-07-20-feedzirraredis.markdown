@@ -19,8 +19,8 @@ such as [Feedzirra](https://github.com/pauldix/feedzirra).
 
 So I wrote a little gem called [feedzirra-redis](https://github.com/logankoester/feedzirra-redis/) to take care of this
 as transparently as possible. You can use it just like you would [Feedzirra](https://github.com/pauldix/feedzirra) normally,
-but your shit doesn't disappear at the end of the script, so you can do the dirty work from a Rakefile via cron instead of
-in the web request/response cycle while your users impatiently twiddle their thumbs.
+but your feeds and entries do not disappear at the end of the script, so you can do the dirty work from a Rakefile via 
+cron instead of in the web request/response cycle while your users impatiently twiddle their thumbs.
 
 ### Installation
 

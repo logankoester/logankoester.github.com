@@ -4,9 +4,9 @@ title: "Soonatra - 'Coming Soon' pages on Sinatra"
 published: true
 ---
 
-h2. {{ page.title }}
+## {{ page.title }}
 
-p(publish_date). 20 Jul 2011
+<p class="publish_date"> 20 Jul 2011</p>
 
 I was recently tasked with creating a "coming soon" page for a new project at work. The requirements were the usual:
 
